@@ -11,7 +11,7 @@ test('Verify Product quantity in Cart', async ({ page }) => {
     // 1. Abre el navegador y se dirige a la página
     await launchBrowser(page);
 
-    // 2. verifica que la home page se vea completa (verifica header, body y footer)
+    // 2. Verifica que la home page se vea completa (verifica header, body y footer)
     await verifyVisibility(page, 'img[alt="Website for automation practice"]');
 
     await verifyVisibility(page, 'text=Category'); 
