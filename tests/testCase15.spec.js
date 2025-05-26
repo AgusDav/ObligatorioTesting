@@ -10,7 +10,9 @@ const {
     generateUniqueEmail,
     checkAddresandOrder,
     addProducts,
-    insertCreditCard
+    insertCreditCard,
+    checkHomePage,
+    checkCartPage,
 } = require('./helpers'); 
 
 test('Place Order: Register while Checkout', async ({ page }) => {
@@ -18,9 +20,7 @@ test('Place Order: Register while Checkout', async ({ page }) => {
     await launchBrowser(page);
 
     // 2. Verifica que la home page se vea completa (verifica header, body y footer)
-    await verifyVisibility(page, 'img[alt="Website for automation practice"]');
-    await verifyVisibility(page, 'text=Category'); 
-    await verifyVisibility(page, 'footer');
+    await checkHomePage(page);
 
     // 3. Click al boton "Signup / Login"
     await clickButton(page, 'a[href="/login"]');
@@ -48,9 +48,7 @@ test('Place Order: Register while Checkout', async ({ page }) => {
     await clickButton(page, 'a[href="/view_cart"]')
 
     // 9. Verifica que la cart page se vea completa (verifica header, body y footer)
-    await verifyVisibility(page, 'img[alt="Website for automation practice"]');
-    await verifyVisibility(page, '.table-responsive.cart_info');
-    await verifyVisibility(page, 'footer');
+    await checkCartPage(page);
 
     // 10. Click al boton "Proceed To Checkout"
     await clickButton(page, 'text="Proceed To Checkout"');

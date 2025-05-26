@@ -126,6 +126,18 @@ async function insertCreditCard(page) {
     await fillForm(page, 'input[name="expiry_year"]', '2029');
 }
 
+async function checkHomePage(page) {
+    await verifyVisibility(page, 'img[alt="Website for automation practice"]');
+    await verifyVisibility(page, 'text=Category'); 
+    await verifyVisibility(page, 'footer');
+}
+
+async function checkCartPage(page) {
+    await verifyVisibility(page, 'img[alt="Website for automation practice"]');
+    await verifyVisibility(page, '.table-responsive.cart_info');
+    await verifyVisibility(page, 'footer');
+}
+
 module.exports = {  
     launchBrowser,
     verifyVisibility,
@@ -138,4 +150,6 @@ module.exports = {
     createAccount,
     login,
     insertCreditCard,
+    checkHomePage,
+    checkCartPage,
 }

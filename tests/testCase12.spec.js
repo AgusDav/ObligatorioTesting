@@ -5,6 +5,7 @@ const {
     launchBrowser,
     verifyVisibility,
     clickButton, 
+    checkHomePage,
 } = require('./helpers'); 
 
 test('Verify Subscription in Cart page', async ({ page }) => {
@@ -12,11 +13,7 @@ test('Verify Subscription in Cart page', async ({ page }) => {
     await launchBrowser(page);
 
     // 2. Verifica que la home page se vea completa (verifica header, body y footer)
-    await verifyVisibility(page, 'img[alt="Website for automation practice"]');
-
-    await verifyVisibility(page, 'text=Category'); 
-
-    await verifyVisibility(page, 'footer');
+    await checkHomePage(page);
     
     // 3. Va a /products
     await clickButton(page, 'a[href="/products"]')

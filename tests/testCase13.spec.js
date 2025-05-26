@@ -4,7 +4,8 @@ import { test, expect } from '@playwright/test';
 const {
     launchBrowser,
     verifyVisibility,
-    clickButton, 
+    clickButton,
+    checkHomePage, 
 } = require('./helpers'); 
 
 test('Verify Product quantity in Cart', async ({ page }) => {
@@ -12,11 +13,7 @@ test('Verify Product quantity in Cart', async ({ page }) => {
     await launchBrowser(page);
 
     // 2. Verifica que la home page se vea completa (verifica header, body y footer)
-    await verifyVisibility(page, 'img[alt="Website for automation practice"]');
-
-    await verifyVisibility(page, 'text=Category'); 
-
-    await verifyVisibility(page, 'footer');
+    await checkHomePage(page);
 
     // 3. Añade primer producto al carrito
     await clickButton(page, 'a[href="/product_details/1"]');
