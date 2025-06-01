@@ -1,30 +1,29 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { launchBrowser, verifyVisibility, clickButton, fillForm } = require('./helpers');
 
 test('Test Case 3: Login User with incorrect email and password', async ({ page }) => {
-  // Paso 1: Launch browser (manejado por Playwright)
+  // Paso 1-2: Ir a la página
+  await launchBrowser(page);
   
-  // Paso 2: Navigate to url
-  await page.goto('https://automationexercise.com/');
-  
-  // Paso 3: Verify that home page is visible successfully
-  await expect(page.locator('img[alt="Website for automation practice"]')).toBeVisible();
+  // Paso 3: Verificar que la página de inicio se carga correctamente
+  await verifyVisibility(page, 'img[alt="Website for automation practice"]');
   await expect(page).toHaveTitle('Automation Exercise');
   await expect(page).toHaveURL('https://automationexercise.com/');
   
-  // Paso 4: Click on 'Signup / Login' button
-  await page.getByRole('link', { name: 'Signup / Login' }).click();
+  // Paso 4: Ir a login
+  await clickButton(page, 'a:has-text("Signup / Login")');
   
-  // Paso 5: Verify 'Login to your account' is visible
-  await expect(page.getByText('Login to your account')).toBeVisible();
+  // Paso 5: Verificar formulario de login
+  await verifyVisibility(page, 'text=Login to your account');
   
-  // Paso 6: Enter incorrect email address and password
-  await page.locator('input[data-qa="login-email"]').fill('incorrect@email.com');
-  await page.locator('input[data-qa="login-password"]').fill('wrongpassword');
+  // Paso 6: Ingresar credenciales incorrectas
+  await fillForm(page, 'input[data-qa="login-email"]', 'incorrect@email.com');
+  await fillForm(page, 'input[data-qa="login-password"]', 'wrongpassword');
   
-  // Paso 7: Click 'login' button
-  await page.locator('button[data-qa="login-button"]').click();
+  // Paso 7: Intentar login
+  await clickButton(page, 'button[data-qa="login-button"]');
   
-  // Paso 8: Verify error 'Your email or password is incorrect!' is visible
-  await expect(page.getByText('Your email or password is incorrect!')).toBeVisible();
+  // Paso 8: Verificar mensaje de error
+  await verifyVisibility(page, 'text=Your email or password is incorrect!');
 }); 

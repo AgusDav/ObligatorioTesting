@@ -1,45 +1,63 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 const path = require('path');
+const { launchBrowser, verifyVisibility, clickButton, fillForm } = require('./helpers');
 
 test('Test Case 6: Contact Us Form', async ({ page }) => {
-  // Paso 1-2
-  await page.goto('https://automationexercise.com');
+  // Paso 1-2: Ir a la página
+  await launchBrowser(page);
 
-  // Paso 3
-  await expect(page.locator('img[alt="Website for automation practice"]')).toBeVisible();
+  // Paso 3: Verificar página de inicio
+  await verifyVisibility(page, 'img[alt="Website for automation practice"]');
 
-  // Paso 4
-  await page.getByRole('link', { name: 'Contact us' }).click();
+  // Paso 4: Ir a Contact Us
+  await clickButton(page, 'a:has-text("Contact us")');
 
-  // Paso 5
-  await expect(page.getByText('Get In Touch')).toBeVisible();
+  // Paso 5: Verificar formulario
+  await verifyVisibility(page, 'text=Get In Touch');
 
-  // Paso 6
-  await page.locator('input[data-qa="name"]').fill('Juan');
-  await page.locator('input[data-qa="email"]').fill('juan@example.com');
-  await page.locator('input[data-qa="subject"]').fill('Consulta de prueba');
-  await page.locator('textarea[data-qa="message"]').fill('Este es un mensaje de prueba para el formulario de contacto.');
+  // Paso 6: Llenar formulario
+  await fillForm(page, 'input[data-qa="name"]', 'Juan');
+  await fillForm(page, 'input[data-qa="email"]', 'juan@example.com');
+  await fillForm(page, 'input[data-qa="subject"]', 'Consulta de prueba');
+  await fillForm(page, 'textarea[data-qa="message"]', 'Este es un mensaje de prueba para el formulario de contacto.');
 
-  // Paso 7 - Upload file
+  // Paso 7: Subir archivo
   const filePath = path.join(__dirname, '../utils/prueba.txt');
   await page.locator('input[name="upload_file"]').setInputFiles(filePath);
 
-// Paso 8 - Click Submit
-page.once('dialog', async dialog => {
+  // Paso 8: Enviar formulario
+  // Configurar el manejador del diálogo antes de hacer click
+  page.once('dialog', async dialog => {
     await dialog.accept();
   });
-  await page.getByRole('button', { name: 'Submit' }).click();
 
-  // Paso 10 - Verificar mensaje de éxito
-  await expect(page.locator('div.status.alert.alert-success')).toHaveText(
-    'Success! Your details have been submitted successfully.',
-    { timeout: 7000 }
-  );
+  // Esperar a que el formulario esté completamente cargado
+  await page.waitForSelector('form.contact-form', { state: 'visible' });
   
+  // Verificar que el botón Submit está presente y es clickeable
+  const submitButton = page.locator('input[data-qa="submit-button"]');
+  await expect(submitButton).toBeVisible();
+  await expect(submitButton).toBeEnabled();
   
+  // Paso 9: Hacer click en el botón Submit y aceptar el diálogo
+  await Promise.all([
+    page.waitForEvent('dialog'),
+    submitButton.click()
+  ]);
 
-  // Paso 11 - Click Home y verificar home page
-  await page.locator('a:has-text("Home")').last().click();
-  await expect(page.locator('img[alt="Website for automation practice"]')).toBeVisible();
+  // Esperar un momento para que se procese el envío
+  await page.waitForTimeout(2000);
+
+  // Paso 10: Verificar mensaje de éxito
+  // Esperar a que el mensaje aparezca
+  await page.waitForSelector('div.status.alert.alert-success', { state: 'visible', timeout: 10000 });
+  
+  // Verificar el texto del mensaje
+  const successMessage = page.locator('div.status.alert.alert-success');
+  await expect(successMessage).toContainText('Success! Your details have been submitted successfully.');
+
+  // Paso 11: Volver a home y verificar
+  await clickButton(page, 'a:has-text("Home")');
+  await verifyVisibility(page, 'img[alt="Website for automation practice"]');
 });
