@@ -118,6 +118,12 @@ async function login(page, email) {
     await clickButton(page, 'button[data-qa="login-button"]');
 }
 
+async function loginLogout(page, email, password) {
+    await fillForm(page, 'input[data-qa="login-email"]', email);
+    await fillForm(page, 'input[data-qa="login-password"]', password);
+    await clickButton(page, 'button[data-qa="login-button"]');
+}
+
 async function insertCreditCard(page) {
     await fillForm(page, 'input[name="name_on_card"]', 'Test User');
     await fillForm(page, 'input[name="card_number"]', '123456789');
@@ -149,6 +155,7 @@ module.exports = {
     addProducts,
     createAccount,
     login,
+    loginLogout,
     insertCreditCard,
     checkHomePage,
     checkCartPage,
