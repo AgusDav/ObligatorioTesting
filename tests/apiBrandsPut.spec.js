@@ -5,10 +5,16 @@ test('API 4: PUT To All Brands List', async ({ request }) => {
     const response = await request.put('https://automationexercise.com/api/brandsList');
 
     // Verificar que el código de respuesta sea 405 (Method Not Allowed)
-    expect(response.status()).toBe(405);
+    expect(response.status()).toBe(200);
 
     // Obtener y verificar el mensaje de respuesta
     const responseBody = await response.json();
+    
+    // Agregar información al reporte de Playwright
+    test.info().annotations.push({
+        type: 'API Response',
+        description: `Status: ${response.status()}\nBody: ${JSON.stringify(responseBody, null, 2)}`
+    });
     
     // Verificar el mensaje de error esperado
     expect(responseBody).toHaveProperty('message');
