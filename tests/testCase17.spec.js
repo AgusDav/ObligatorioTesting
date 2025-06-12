@@ -29,6 +29,7 @@ test('Remove Products From Cart', async ({ page }) => {
     await clickButton(page, `a.cart_quantity_delete[data-product-id="${1}"]`);
 
     //7. Verifica que el primer producto se haya eliminado del carrito
+    await page.waitForSelector('#product-1', { state: 'hidden' });
     const product = await page.isVisible('#product-1');
     if (!product) {
         console.log('Se borro exitosamente el producto 1 del carrito');
