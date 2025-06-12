@@ -1,40 +1,28 @@
 const { test, expect } = require('@playwright/test');
-const { generateUniqueEmail } = require('./helpers');
+const { generateUniqueEmail, getUserDataForAPI } = require('./helpers');
 
 test('API 12: DELETE METHOD To Delete User Account', async ({ request }) => {
     // Generar un email único para el nuevo usuario
     const email = await generateUniqueEmail();
     const password = 'password123';
 
-    // Datos del usuario a crear
-    const userData = {
-        name: 'Test User',
-        email: email,
-        password: password,
-        title: 'Mr',
-        birth_date: '1',
-        birth_month: '1',
-        birth_year: '2000',
-        firstname: 'Test',
-        lastname: 'User',
-        company: 'TestCompany',
-        address1: '123 Test Street',
-        address2: 'Apt 1',
-        country: 'United States',
-        zipcode: '12345',
-        state: 'TestState',
-        city: 'TestCity',
-        mobile_number: '1234567890'
-    };
+    // Obtener los datos del usuario usando el helper
+    const userData = await getUserDataForAPI(email);
 
     // Primero creamos la cuenta
     await request.post('https://automationexercise.com/api/createAccount', {
-        data: userData
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        form: userData
     });
 
     // Luego eliminamos la cuenta
     const deleteResponse = await request.delete('https://automationexercise.com/api/deleteAccount', {
-        data: {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        form: {
             email: email,
             password: password
         }
@@ -45,6 +33,12 @@ test('API 12: DELETE METHOD To Delete User Account', async ({ request }) => {
 
     // Obtener y verificar el mensaje de respuesta
     const responseBody = await deleteResponse.json();
+    
+    // Agregar información al reporte de Playwright
+    test.info().annotations.push({
+        type: 'API Response',
+        description: `Status: ${deleteResponse.status()}\nBody: ${JSON.stringify(responseBody, null, 2)}`
+    });
     
     // Verificar el mensaje de éxito esperado
     expect(responseBody).toHaveProperty('message');

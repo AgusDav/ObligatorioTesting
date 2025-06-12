@@ -7,7 +7,10 @@ test('API 5: POST To Search Product', async ({ request }) => {
     for (const searchTerm of searchTerms) {
         // Realizar la petición POST a la API con el término de búsqueda
         const response = await request.post('https://automationexercise.com/api/searchProduct', {
-            data: {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            form: {
                 search_product: searchTerm
             }
         });

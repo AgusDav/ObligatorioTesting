@@ -16,24 +16,47 @@ async function fillForm(page, selector, value) {
     await page.fill(selector, value);
 }
 
-async function fillFormRegisterUser(page){
+function getBaseUserData(email) {
+    return {
+        name: 'Test User',
+        email: email,
+        password: 'password123',
+        title: 'Mr',
+        birth_date: '1',
+        birth_month: '1',
+        birth_year: '2000',
+        firstname: 'Test',
+        lastname: 'User',
+        company: 'TestCompany',
+        address1: '123 Test Street',
+        address2: 'Apt 1',
+        country: 'United States',
+        zipcode: '12345',
+        state: 'TestState',
+        city: 'TestCity',
+        mobile_number: '1234567890'
+    };
+}
+
+async function fillFormRegisterUser(page) {
+    const userData = getBaseUserData(''); // No necesitamos email para UI
     await page.check('input[id="id_gender1"]'); // Seleccionar el título
-    await fillForm(page, 'input[name="password"]', 'password123');
-    await page.selectOption('select[name="days"]', '1');
-    await page.selectOption('select[name="months"]', '1');
-    await page.selectOption('select[name="years"]', '2000');
+    await fillForm(page, 'input[name="password"]', userData.password);
+    await page.selectOption('select[name="days"]', userData.birth_date);
+    await page.selectOption('select[name="months"]', userData.birth_month);
+    await page.selectOption('select[name="years"]', userData.birth_year);
     await page.check('input#newsletter');
     await page.check('input#optin');
-    await fillForm(page, 'input[name="first_name"]', 'Test');
-    await fillForm(page, 'input[name="last_name"]', 'User');
-    await fillForm(page, 'input[name="company"]', 'TestCompany');
-    await fillForm(page, 'input[name="address1"]', '123 Test Street');
-    await fillForm(page, 'input[name="address2"]', 'Apt 1');
-    await page.selectOption('select[name="country"]', 'United States');
-    await fillForm(page, 'input[name="state"]', 'TestState');
-    await fillForm(page, 'input[name="city"]', 'TestCity');
-    await fillForm(page, 'input[name="zipcode"]', '12345');
-    await fillForm(page, 'input[name="mobile_number"]', '1234567890');
+    await fillForm(page, 'input[name="first_name"]', userData.firstname);
+    await fillForm(page, 'input[name="last_name"]', userData.lastname);
+    await fillForm(page, 'input[name="company"]', userData.company);
+    await fillForm(page, 'input[name="address1"]', userData.address1);
+    await fillForm(page, 'input[name="address2"]', userData.address2);
+    await page.selectOption('select[name="country"]', userData.country);
+    await fillForm(page, 'input[name="state"]', userData.state);
+    await fillForm(page, 'input[name="city"]', userData.city);
+    await fillForm(page, 'input[name="zipcode"]', userData.zipcode);
+    await fillForm(page, 'input[name="mobile_number"]', userData.mobile_number);
 }
 
 async function generateUniqueEmail() {
@@ -144,6 +167,10 @@ async function checkCartPage(page) {
     await verifyVisibility(page, 'footer');
 }
 
+async function getUserDataForAPI(email) {
+    return getBaseUserData(email);
+}
+
 module.exports = {  
     launchBrowser,
     verifyVisibility,
@@ -159,4 +186,5 @@ module.exports = {
     insertCreditCard,
     checkHomePage,
     checkCartPage,
+    getUserDataForAPI,
 }

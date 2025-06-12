@@ -3,6 +3,14 @@ const { test, expect } = require('@playwright/test');
 const path = require('path');
 const { launchBrowser, verifyVisibility, clickButton, fillForm } = require('./helpers');
 
+test.beforeEach(async ({ page }) => {
+  // Siempre aceptar los diálogos que aparezcan
+  page.on('dialog', async dialog => {
+    console.log(`Se detectó un diálogo con el mensaje: "${dialog.message()}"`);
+    await dialog.accept();
+  });
+});
+
 test('Test Case 6: Contact Us Form', async ({ page }) => {
   // Paso 1-2: Ir a la página
   await launchBrowser(page);
@@ -27,11 +35,6 @@ test('Test Case 6: Contact Us Form', async ({ page }) => {
   await page.locator('input[name="upload_file"]').setInputFiles(filePath);
 
   // Paso 8: Enviar formulario
-  // Configurar el manejador del diálogo antes de hacer click
-  page.once('dialog', async dialog => {
-    await dialog.accept();
-  });
-
   // Esperar a que el formulario esté completamente cargado
   await page.waitForSelector('form.contact-form', { state: 'visible' });
   
@@ -40,24 +43,26 @@ test('Test Case 6: Contact Us Form', async ({ page }) => {
   await expect(submitButton).toBeVisible();
   await expect(submitButton).toBeEnabled();
   
-  // Paso 9: Hacer click en el botón Submit y aceptar el diálogo
-  await Promise.all([
-    page.waitForEvent('dialog'),
-    submitButton.click()
-  ]);
+  // Paso 9: Hacer click en el botón Submit
+  await submitButton.click();
 
-  // Esperar un momento para que se procese el envío
-  await page.waitForTimeout(2000);
+  // Esperar a que la página se estabilice después del envío (incluyendo posibles peticiones AJAX)
+  await page.waitForLoadState('networkidle');
 
-  // Paso 10: Verificar mensaje de éxito
-  // Esperar a que el mensaje aparezca
-  await page.waitForSelector('div.status.alert.alert-success', { state: 'visible', timeout: 10000 });
+  // Pequeña espera adicional para asegurar la renderización visual
+  await page.waitForTimeout(500);
+
+  // Esperar a que el mensaje de éxito aparezca (el diálogo ya habrá sido aceptado)
+  await page.waitForSelector('div.status.alert.alert-success', {
+    state: 'visible',
+    timeout: 10000
+  });
   
   // Verificar el texto del mensaje
   const successMessage = page.locator('div.status.alert.alert-success');
   await expect(successMessage).toContainText('Success! Your details have been submitted successfully.');
 
-  // Paso 11: Volver a home y verificar
+  // Paso 10: Volver a home y verificar
   await clickButton(page, 'a:has-text("Home")');
   await verifyVisibility(page, 'img[alt="Website for automation practice"]');
 });
