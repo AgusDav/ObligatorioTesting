@@ -104,6 +104,17 @@ async function addProducts(page) {
     await clickButton(page, 'a[data-product-id="2"].add-to-cart');
     await clickButton(page, 'button.close-modal');
 }
+async function addAllProducts(page) {
+    // Encuentra todos los elementos de producto visibles
+    const products = await page.$$('.features_items .productinfo.text-center');
+
+    for (const product of products) {
+        const addToCartButton = await product.$('a.add-to-cart');
+        await addToCartButton.hover();
+        await addToCartButton.click();
+        await clickButton(page, 'button.close-modal'); // Cierra el modal de confirmación
+    }
+}
 
 async function createAccount(page, email) {
     await launchBrowser(page);
@@ -133,6 +144,13 @@ async function createAccount(page, email) {
     await verifyVisibility(page, 'h2:has-text("Account Created!")');
     await clickButton(page, 'a:has-text("Continue")');
     await clickButton(page, 'a:has-text("Logout")');
+}
+
+async function scrollToFooter(page) {
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+}
+async function scrollToHeader(page) {
+    await page.evaluate(() => window.scrollTo(0, 0));
 }
 
 async function login(page, email) {
@@ -172,6 +190,7 @@ async function getUserDataForAPI(email) {
 }
 
 module.exports = {  
+    addAllProducts,
     launchBrowser,
     verifyVisibility,
     clickButton,
@@ -181,6 +200,8 @@ module.exports = {
     checkAddresandOrder,
     addProducts,
     createAccount,
+    scrollToHeader,
+    scrollToFooter,
     login,
     loginLogout,
     insertCreditCard,
