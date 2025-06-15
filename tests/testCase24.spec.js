@@ -3,7 +3,6 @@ const { launchBrowser,
     verifyVisibility,
     clickButton,
     fillForm,
-    registerUser,
     createAccount,
     addProducts,
     login
@@ -72,13 +71,7 @@ test('Test Case 24: Download Invoice after purchase order', async ({ page }) => 
     await clickButton(page, 'button:has-text("Pay and Confirm Order")');
 
     // 18. Verify success message 'Your order has been placed successfully!'
-    try {
-        await page.waitForSelector('p:has-text("Your order has been placed successfully!")', { state: 'visible', timeout: 5000 });
-        const successMessage = await page.textContent('p:has-text("Your order has been placed successfully!")');
-        expect(successMessage).toContain('Your order has been placed successfully!');
-    } catch (error) {
-        console.error('Error capturing success message:', error);
-    }
+    await verifyVisibility(page, 'h2:has-text("Order Placed!")');    
 
     await page.waitForLoadState('load');
     // 19. Click 'Download Invoice' button and verify invoice is downloaded successfully
