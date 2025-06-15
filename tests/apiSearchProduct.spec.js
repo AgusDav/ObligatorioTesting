@@ -1,11 +1,11 @@
 const { test, expect } = require('@playwright/test');
 
 test('API 5: POST To Search Product', async ({ request }) => {
-    // Array de términos de búsqueda para probar
+    // Probamos diferentes términos de búsqueda para asegurar que la API funciona con varios casos
     const searchTerms = ['top', 'tshirt', 'jean'];
 
     for (const searchTerm of searchTerms) {
-        // Realizar la petición POST a la API con el término de búsqueda
+        // Hacemos la petición a la API con cada término de búsqueda
         const response = await request.post('https://automationexercise.com/api/searchProduct', {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -15,20 +15,20 @@ test('API 5: POST To Search Product', async ({ request }) => {
             }
         });
 
-        // Verificar que el código de respuesta sea 200
+        // Verificamos que la API respondió correctamente
         expect(response.status()).toBe(200);
 
-        // Obtener y verificar el JSON de respuesta
+        // Obtenemos y verificamos la respuesta
         const responseBody = await response.json();
         
-        // Verificar que la respuesta contiene la estructura esperada
+        // Verificamos que la respuesta tiene la estructura correcta
         expect(responseBody).toHaveProperty('products');
         expect(Array.isArray(responseBody.products)).toBeTruthy();
 
-        // Verificar que hay productos en la lista
+        // Verificamos que encontramos productos
         expect(responseBody.products.length).toBeGreaterThan(0);
 
-        // Verificar la estructura de un producto
+        // Verificamos que cada producto tiene la estructura correcta
         const firstProduct = responseBody.products[0];
         expect(firstProduct).toHaveProperty('id');
         expect(firstProduct).toHaveProperty('name');
@@ -36,7 +36,7 @@ test('API 5: POST To Search Product', async ({ request }) => {
         expect(firstProduct).toHaveProperty('brand');
         expect(firstProduct).toHaveProperty('category');
 
-        // Verificar que el nombre del producto contiene el término de búsqueda
+        // Verificamos que el producto encontrado realmente contiene el término de búsqueda
         expect(firstProduct.name.toLowerCase()).toContain(searchTerm.toLowerCase());
     }
 }); 

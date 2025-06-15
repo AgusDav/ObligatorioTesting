@@ -2,14 +2,14 @@ const { test, expect } = require('@playwright/test');
 const { generateUniqueEmail, getUserDataForAPI } = require('./helpers');
 
 test('API 14: GET user account detail by email', async ({ request }) => {
-    // Generar un email único para el nuevo usuario
+    // Generamos un email único para el nuevo usuario
     const email = await generateUniqueEmail();
     const password = 'password123';
 
-    // Obtener los datos del usuario usando el helper
+    // Obtenemos los datos del usuario usando el helper
     const userData = await getUserDataForAPI(email);
 
-    // Primero creamos la cuenta
+    // Primero creamos la cuenta para poder obtener sus detalles
     await request.post('https://automationexercise.com/api/createAccount', {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -17,25 +17,26 @@ test('API 14: GET user account detail by email', async ({ request }) => {
         form: userData
     });
 
-    // Obtenemos los detalles del usuario
+    // Obtenemos los detalles del usuario usando su email
     const response = await request.get(`https://automationexercise.com/api/getUserDetailByEmail?email=${email}`);
 
-    // Verificar que el código de respuesta sea 200
+    // Verificamos que la API respondió con éxito (código 200)
     expect(response.status()).toBe(200);
 
-    // Obtener y verificar el JSON de respuesta
+    // Obtenemos y verificamos el JSON de respuesta
     const responseBody = await response.json();
     
-    // Agregar información al reporte de Playwright
+    // Agregamos información al reporte de Playwright
+    // Esto nos ayudará a debuggear si algo falla
     test.info().annotations.push({
         type: 'API Response',
         description: `Status: ${response.status()}\nBody: ${JSON.stringify(responseBody, null, 2)}`
     });
     
-    // Verificar que la respuesta contiene la estructura esperada
+    // Verificamos que la respuesta contiene la estructura esperada
     expect(responseBody).toHaveProperty('user');
     
-    // Verificar los detalles del usuario
+    // Verificamos cada campo del usuario
     const user = responseBody.user;
     expect(user).toHaveProperty('id');
     expect(user).toHaveProperty('name', userData.name);

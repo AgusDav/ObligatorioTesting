@@ -3,27 +3,27 @@ const { test, expect } = require('@playwright/test');
 const { launchBrowser, verifyVisibility, clickButton, fillForm } = require('./helpers');
 
 test('Test Case 9: Search Product', async ({ page }) => {
-  // Paso 1 y 2: Navegar a la URL
+  // Iniciamos el navegador y navegamos a la página principal
   await launchBrowser(page);
 
-  // Paso 3: Verificar que la página de inicio es visible
+  // Verificamos que la página de inicio se carga correctamente
   await verifyVisibility(page, 'img[alt="Website for automation practice"]');
 
-  // Paso 4: Click en 'Products'
+  // Navegamos a la página de productos
   await clickButton(page, 'a[href="/products"]');
 
-  // Paso 5: Verificar navegación a ALL PRODUCTS
+  // Verificamos que hemos llegado a la página de productos
   await expect(page).toHaveURL(/.*products/);
   await verifyVisibility(page, 'h2:has-text("All Products")');
 
-  // Paso 6: Ingresar nombre del producto en el input de búsqueda y hacer click en buscar
+  // Realizamos la búsqueda de productos
   await fillForm(page, '#search_product', 'Top');
   await clickButton(page, '#submit_search');
 
-  // Paso 7: Verificar que aparece 'SEARCHED PRODUCTS'
+  // Verificamos que la página de resultados de búsqueda se muestra
   await verifyVisibility(page, 'h2:has-text("Searched Products")');
 
-  // Paso 8: Verificar que todos los productos relacionados con la búsqueda son visibles
+  // Verificamos que se muestran productos relacionados con la búsqueda
   const searchedItems = page.locator('.features_items .product-image-wrapper');
   await expect(searchedItems.first()).toBeVisible();
   const count = await searchedItems.count();
