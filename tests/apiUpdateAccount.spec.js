@@ -2,14 +2,14 @@ const { test, expect } = require('@playwright/test');
 const { generateUniqueEmail, getUserDataForAPI } = require('./helpers');
 
 test('API 13: PUT METHOD To Update User Account', async ({ request }) => {
-    // Generar un email único para el nuevo usuario
+    // Generamos un email único para el nuevo usuario
     const email = await generateUniqueEmail();
     const password = 'password123';
 
-    // Obtener los datos iniciales del usuario usando el helper
+    // Obtenemos los datos iniciales del usuario usando el helper
     const initialUserData = await getUserDataForAPI(email);
 
-    // Primero creamos la cuenta
+    // Primero creamos la cuenta que vamos a actualizar
     await request.post('https://automationexercise.com/api/createAccount', {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -17,7 +17,7 @@ test('API 13: PUT METHOD To Update User Account', async ({ request }) => {
         form: initialUserData
     });
 
-    // Datos actualizados del usuario
+    // Preparamos los datos actualizados del usuario
     const updatedUserData = {
         name: 'Updated User',
         email: email,
@@ -38,7 +38,7 @@ test('API 13: PUT METHOD To Update User Account', async ({ request }) => {
         mobile_number: '9876543210'
     };
 
-    // Actualizamos la cuenta
+    // Enviamos la petición PUT para actualizar la cuenta
     const updateResponse = await request.put('https://automationexercise.com/api/updateAccount', {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
@@ -46,23 +46,23 @@ test('API 13: PUT METHOD To Update User Account', async ({ request }) => {
         form: updatedUserData
     });
 
-    // Verificar que el código de respuesta sea 200
+    // Verificamos que la API responde con éxito (código 200)
     expect(updateResponse.status()).toBe(200);
 
-    // Obtener y verificar el mensaje de respuesta
+    // Obtenemos y analizamos la respuesta JSON
     const responseBody = await updateResponse.json();
     
-    // Agregar información al reporte de Playwright
+    // Agregamos información detallada al reporte de Playwright
     test.info().annotations.push({
         type: 'API Response',
         description: `Status: ${updateResponse.status()}\nBody: ${JSON.stringify(responseBody, null, 2)}`
     });
     
-    // Verificar el mensaje de éxito esperado
+    // Verificamos que la respuesta incluye el mensaje de éxito esperado
     expect(responseBody).toHaveProperty('message');
     expect(responseBody.message).toBe('User updated!');
 
-    // Verificar que la respuesta incluye el código de respuesta
+    // Verificamos que la respuesta incluye el código de respuesta correcto
     expect(responseBody).toHaveProperty('responseCode');
     expect(responseBody.responseCode).toBe(200);
 

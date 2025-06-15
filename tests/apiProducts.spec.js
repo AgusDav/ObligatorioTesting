@@ -1,23 +1,23 @@
 const { test, expect } = require('@playwright/test');
 
 test('API 1: Get All Products List', async ({ request }) => {
-    // Realizar la petición GET a la API
+    // Hacemos una petición GET a la API de productos
     const response = await request.get('https://automationexercise.com/api/productsList');
 
-    // Verificar que el código de respuesta sea 200
+    // Verificamos que la API respondió con éxito (código 200)
     expect(response.status()).toBe(200);
 
-    // Obtener y verificar el JSON de respuesta
+    // Obtenemos el cuerpo de la respuesta en formato JSON
     const responseBody = await response.json();
     
-    // Verificar que la respuesta contiene la estructura esperada
+    // Verificamos que la respuesta tiene la estructura correcta
     expect(responseBody).toHaveProperty('products');
     expect(Array.isArray(responseBody.products)).toBeTruthy();
 
-    // Verificar que hay productos en la lista
+    // Verificamos que hay al menos un producto en la lista
     expect(responseBody.products.length).toBeGreaterThan(0);
 
-    // Verificar la estructura de un producto
+    // Verificamos la estructura de un producto individual
     const firstProduct = responseBody.products[0];
     expect(firstProduct).toHaveProperty('id');
     expect(firstProduct).toHaveProperty('name');

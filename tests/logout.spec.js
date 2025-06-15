@@ -8,27 +8,25 @@ const {
 const { testUser } = require('./config/testUsers');
 
 test('Logout User', async ({ page }) => {
-    // 1. Launch browser
-    // 2. Navigate to url 'http://automationexercise.com'
+    // Iniciamos el navegador y navegamos a la página principal
     await launchBrowser(page);
 
-    // 3. Verify that home page is visible successfully
+    // Verificamos que la página de inicio se carga correctamente
     await verifyVisibility(page, 'img[alt="Website for automation practice"]');
 
-    // 4. Click on 'Signup / Login' button
+    // Navegamos a la página de login
     await clickButton(page, 'a[href="/login"]');
 
-    // 5. Verify 'Login to your account' is visible
-    // 6. Enter correct email address and password
-    // 7. Click 'login' button
+    // Realizamos el proceso de login
+    // Usamos el helper loginLogout que maneja todo el proceso de autenticación
     await loginLogout(page, testUser.email, testUser.password);
 
-    // 8. Verify that 'Logged in as username' is visible
+    // Verificamos que el login fue exitoso
     await verifyVisibility(page, `text=Logged in as ${testUser.name}`);
 
-    // 9. Click 'Logout' button
+    // Realizamos el logout
     await clickButton(page, 'a:has-text("Logout")');
 
-    // 10. Verify that user is navigated to login page
+    // Verificamos que el logout fue exitoso
     await verifyVisibility(page, 'h2:has-text("Login to your account")');
 }); 

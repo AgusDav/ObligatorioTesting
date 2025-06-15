@@ -1,24 +1,25 @@
 const { test, expect } = require('@playwright/test');
 
 test('API 3: Get All Brands List', async ({ request }) => {
-    // Realizar la petición GET a la API
+    // Hacemos una petición GET a la API de marcas
     const response = await request.get('https://automationexercise.com/api/brandsList');
 
-    // Verificar que el código de respuesta sea 200
+    // Verificamos que la API respondió con éxito (código 200)
     expect(response.status()).toBe(200);
 
-    // Obtener y verificar el JSON de respuesta
+    // Obtenemos el cuerpo de la respuesta en formato JSON
     const responseBody = await response.json();
     
-    // Verificar que la respuesta contiene la estructura esperada
+    // Verificamos que la respuesta tiene la estructura correcta
+    // Debe tener una propiedad 'brands' que sea un array
     expect(responseBody).toHaveProperty('brands');
     expect(Array.isArray(responseBody.brands)).toBeTruthy();
 
-    // Verificar que hay marcas en la lista
+    // Verificamos que hay al menos una marca en la lista
     expect(responseBody.brands.length).toBeGreaterThan(0);
 
-    // Verificar la estructura de una marca
+    // Verificamos la estructura de una marca individual
     const firstBrand = responseBody.brands[0];
-    expect(firstBrand).toHaveProperty('id');
-    expect(firstBrand).toHaveProperty('brand');
+    expect(firstBrand).toHaveProperty('id');      // ID único de la marca
+    expect(firstBrand).toHaveProperty('brand');   // Nombre de la marca
 }); 

@@ -3,34 +3,34 @@ const { test, expect } = require('@playwright/test');
 const { verifyVisibility, clickButton, login, launchBrowser, checkHomePage, createAccount, generateUniqueEmail } = require('./helpers');
 
 test('Test Case 4: Login User with correct email and password', async ({ page }) => {
-  // Crear una cuenta nueva para la prueba
+  // Primero creamos una cuenta nueva para asegurarnos que tenemos un usuario válido
   const testEmail = await generateUniqueEmail();
   await createAccount(page, testEmail);
   
-  // Paso 1-2: Ir a la página
+  // Vamos a la página principal
   await launchBrowser(page);
   
-  // Paso 3: Verificar que la página de inicio se carga correctamente
+  // Verificamos que la página cargó bien
   await checkHomePage(page);
   
-  // Paso 4: Ir a login
+  // Click en el botón de login
   await clickButton(page, 'a:has-text("Signup / Login")');
   
-  // Paso 5: Verificar formulario de login
+  // Verificamos que el formulario de login está visible
   await verifyVisibility(page, 'text=Login to your account');
   
-  // Paso 6: Ingresar credenciales correctas
+  // Intentamos hacer login con las credenciales que acabamos de crear
   await login(page, testEmail);
   
-  // Paso 7: Verificar login exitoso
+  // Verificamos que el login fue exitoso
   await verifyVisibility(page, 'a:has-text("Logged in as ")');
   
-  // Paso 8: Eliminar cuenta
+  // Limpieza: eliminamos la cuenta que creamos
   await clickButton(page, 'a:has-text("Delete Account")');
   
-  // Paso 9: Verificar que la cuenta fue eliminada
+  // Verificamos que la cuenta fue eliminada correctamente
   await verifyVisibility(page, 'text=ACCOUNT DELETED!');
   
-  // Paso 10: Continuar
+  // Click en Continue para volver a la página principal
   await clickButton(page, 'text=Continue');
 }); 
